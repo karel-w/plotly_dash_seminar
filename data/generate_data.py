@@ -19,4 +19,3 @@ def generate_random_array(size):
 
     return 
 
-generate_random_array(100000)
