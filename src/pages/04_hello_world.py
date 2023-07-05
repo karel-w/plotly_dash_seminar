@@ -1,14 +1,3 @@
-'''
-1) Obtain the repo from git
-
-
-2) Create a conda environment
-
-conda create --name dash_tutorial
-conda install -c conda-forge dash
-conda install -c conda-forge dash-bootstrap-components
-'''
-
 import dash
 from dash import html, dcc, callback, Input, Output
 import dash_mantine_components as dmc

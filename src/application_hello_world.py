@@ -1,5 +1,4 @@
 from dash import Dash, html, dcc, Input, Output, callback
-import dash_mantine_components as dmc
 import plotly.express as px
 import pandas as pd
 
@@ -7,7 +6,7 @@ data = pd.read_csv('../data/time_series.csv', index_col = 0)
 
 app = Dash(__name__)
 
-server = app.server
+# server = app.server
 
 app.layout = html.Div([
     html.H1('Hello world: Time series analysis'),
