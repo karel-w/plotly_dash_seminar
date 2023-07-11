@@ -29,7 +29,9 @@ layout = html.Div(children=[
     dcc.Markdown(''' 
     For the scientific community the open source version is often good enough, as you can still do everything through python.
     The major drawback of the open source version is the lack of support for deploying your app to the public. 
-    But in this course i'll show you how to deploy your app using [eu.pythonanywhere.com](eu.pythonanywhere.com) and how to deploy your app on a apache webserver.
+    But in this course i'll show you how to deploy your app using [eu.pythonanywhere.com](eu.pythonanywhere.com).
+    If you need to deploy the app on your own (or group's) website there are multiple options depending on the server setup.
+    Take a look [here](https://flask.palletsprojects.com/en/2.0.x/deploying/) for more details.
 
     '''), 
 

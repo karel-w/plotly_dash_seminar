@@ -63,6 +63,11 @@ layout = html.Div(children=[
     ]),
 
     dcc.Markdown('''
+    We could even remove the subplots now as they are no longer required for clarity.
+    If you want to investigate a specific class in detail we can toggle them on/off from the legend.
+    '''),
+
+    dcc.Markdown('''
     Now lets take a look at the code and what is required to create a plot like this.
     '''),
 
@@ -77,29 +82,20 @@ layout = html.Div(children=[
             15: {'color':'green'},
             16: {'color':'green'},
             22: {'color':'green'},
-            30: {'color':'green'},
-            31: {'color':'green'},
             32: {'color':'green'},
             33: {'color':'green'},
             34: {'color':'green'},
             35: {'color':'green'},
             36: {'color':'green'},
             37: {'color':'green'},
-            75: {'color':'green'},
-            76: {'color':'green'},
-            150: {'color':'green'},
-            161: {'color':'green'},
-            162: {'color':'green'},
-            163: {'color':'green'},
-            164: {'color':'green'},
-            165: {'color':'green'},
-            166: {'color':'green'},
+            38: {'color':'green'},
+            39: {'color':'green'},
+            71: {'color':'green'},
+            128: {'color':'green'},
+            129: {'color':'green'},
+            157: {'color':'green'},
             167: {'color':'green'},
-            168: {'color':'green'},
-            169: {'color':'green'},
-            170: {'color':'green'},
-            178: {'color':'green'},
-            188: {'color':'green'},
+            200: {'color':'green'},
         },
         children='''
 import plotly.graph_objects as go
@@ -130,59 +126,22 @@ markers = ['circle', 'cross', 'star', 'triangle-up', 'diamond', 'pentagon', 'squ
 colors = ['#800000', '#000075', '#e6194B', '#f58231', '#a9a9a9', '#f032e6', '#3cb44b']
 positions = [(4,1), (4, 2), (4,3), (4,4), (1,4), (2,4), (3,4)]
 
-#add lines for good and ok regime to subplots, we do this first to have the traces below the data points
-line_trace1 = {
-    'type':'scatter',
-    'x':[0.2, 0.2],
-    'y':[0, 0.2],
-    'line_shape':'linear',
-    'showlegend':False,
-    'line' : {'color':'#A3DA8D'},
-}
-
-line_trace2 = {
-    'type':'scatter',
-    'x':[0, 0.2],
-    'y':[0.2, 0.2],
-    'line_shape':'linear',
-    'showlegend':False,
-    'line' : {'color':'#A3DA8D'},
-}
-
-line_trace3 = {
-    'type':'scatter',
-    'x':[0.4, 0.4],
-    'y':[0, 0.4],
-    'line_shape':'linear',
-    'showlegend':False,
-    'line' : {'color':'#6695be'},
-}
-
-line_trace4 = {
-    'type':'scatter',
-    'x':[0, 0.4],
-    'y':[0.4, 0.4],
-    'line_shape':'linear',
-    'showlegend':False,
-    'line' : {'color':'#6695be'},
-}
-
-for pos in positions:
-    fig.append_trace(line_trace1, pos[0], pos[1])
-    fig.append_trace(line_trace2, pos[0], pos[1])
-    fig.append_trace(line_trace3, pos[0], pos[1])
-    fig.append_trace(line_trace4, pos[0], pos[1])
-
 #itterate over each enzyme class settings and a trace for each ec
 for ec, en, symbol, color, pos in zip(enzyme_classes, enzyme_names, markers, colors, positions):
     #main plot
     fig.add_trace(
         go.Scatter(
             x = data[data['EC'].str.startswith(f'{ec}')]['score_alpha'], y=data[data['EC'].str.startswith(f'{ec}')]['score_topm'], 
+            customdata = data[data['EC'].str.startswith(f'{ec}')]['EC'].tolist(),
+            hovertemplate = '<br>'.join([
+                'TopScore AF2: %{x}',
+                'TopScore TopModel: %{y}',
+                'EC: %{customdata}'
+            ]),
             mode='markers',
             marker_color = color,
             marker_symbol = symbol,
-            marker_size = 10,
+            marker_size = 8,
             name = en,
             legendrank = ec,
             legendgroup = str(ec),
@@ -194,10 +153,11 @@ for ec, en, symbol, color, pos in zip(enzyme_classes, enzyme_names, markers, col
     fig.add_trace(
         go.Scatter(
             x = data[data['EC'].str.startswith(f'{ec}')]['score_alpha'], y=data[data['EC'].str.startswith(f'{ec}')]['score_topm'], 
+            customdata = data[data['EC'].str.startswith(f'{ec}')]['EC'],
             mode='markers',
             marker_color = color,
             marker_symbol = symbol,
-            marker_size = 10,
+            marker_size = 6,
             name = en,
             legendrank = ec,
             legendgroup = str(ec),
@@ -249,6 +209,21 @@ fig.add_shape(
         'font':{'family':'arial', 'size': 8},
     },
 )
+
+#add lines for good and ok regime to subplots.
+for pos in positions:
+    for val in [0.2, 0.4]:
+        fig.add_shape(
+            type='rect',
+            x0=0, y0=0, x1=val, y1=val,
+            line={
+                'color': '#A3DA8D' if val == 0.2 else '#6695be',
+                'width': 2,
+            },
+            layer = 'below',
+            row = pos[0],
+            col = pos[1],
+        )
 
 # update layout
 fig.update_layout(
@@ -320,7 +295,9 @@ fig.update_yaxes(
     linecolor='black',
     row=1,
     col=1,
-)  
+)
+
+fig.write_image('topenzyme_graph_test.png')
         '''
     ),
 

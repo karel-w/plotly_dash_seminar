@@ -27,55 +27,18 @@ def topenzyme_graph(csv_path):
     colors = ['#800000', '#000075', '#e6194B', '#f58231', '#a9a9a9', '#f032e6', '#3cb44b']
     positions = [(4,1), (4, 2), (4,3), (4,4), (1,4), (2,4), (3,4)]
 
-    #add lines for good and ok regime to subplots, we do this first to have the traces below the data points
-    line_trace1 = {
-        'type':'scatter',
-        'x':[0.2, 0.2],
-        'y':[0, 0.2],
-        'line_shape':'linear',
-        'showlegend':False,
-        'line' : {'color':'#A3DA8D'},
-    }
-
-    line_trace2 = {
-        'type':'scatter',
-        'x':[0, 0.2],
-        'y':[0.2, 0.2],
-        'line_shape':'linear',
-        'showlegend':False,
-        'line' : {'color':'#A3DA8D'},
-    }
-
-    line_trace3 = {
-        'type':'scatter',
-        'x':[0.4, 0.4],
-        'y':[0, 0.4],
-        'line_shape':'linear',
-        'showlegend':False,
-        'line' : {'color':'#6695be'},
-    }
-
-    line_trace4 = {
-        'type':'scatter',
-        'x':[0, 0.4],
-        'y':[0.4, 0.4],
-        'line_shape':'linear',
-        'showlegend':False,
-        'line' : {'color':'#6695be'},
-    }
-
-    for pos in positions:
-        fig.append_trace(line_trace1, pos[0], pos[1])
-        fig.append_trace(line_trace2, pos[0], pos[1])
-        fig.append_trace(line_trace3, pos[0], pos[1])
-        fig.append_trace(line_trace4, pos[0], pos[1])
-
     #itterate over each enzyme class settings and a trace for each ec
     for ec, en, symbol, color, pos in zip(enzyme_classes, enzyme_names, markers, colors, positions):
         #main plot
         fig.add_trace(
             go.Scatter(
                 x = data[data['EC'].str.startswith(f'{ec}')]['score_alpha'], y=data[data['EC'].str.startswith(f'{ec}')]['score_topm'], 
+                customdata = data[data['EC'].str.startswith(f'{ec}')]['EC'].tolist(),
+                hovertemplate = '<br>'.join([
+                    'TopScore AF2: %{x}',
+                    'TopScore TopModel: %{y}',
+                    'EC: %{customdata}'
+                ]),
                 mode='markers',
                 marker_color = color,
                 marker_symbol = symbol,
@@ -91,6 +54,7 @@ def topenzyme_graph(csv_path):
         fig.add_trace(
             go.Scatter(
                 x = data[data['EC'].str.startswith(f'{ec}')]['score_alpha'], y=data[data['EC'].str.startswith(f'{ec}')]['score_topm'], 
+                customdata = data[data['EC'].str.startswith(f'{ec}')]['EC'],
                 mode='markers',
                 marker_color = color,
                 marker_symbol = symbol,
@@ -146,6 +110,21 @@ def topenzyme_graph(csv_path):
             'font':{'family':'arial', 'size': 8},
         },
     )
+
+    #add lines for good and ok regime to subplots.
+    for pos in positions:
+        for val in [0.2, 0.4]:
+            fig.add_shape(
+                type='rect',
+                x0=0, y0=0, x1=val, y1=val,
+                line={
+                    'color': '#A3DA8D' if val == 0.2 else '#6695be',
+                    'width': 2,
+                },
+                layer = 'below',
+                row = pos[0],
+                col = pos[1],
+            )
 
     # update layout
     fig.update_layout(
