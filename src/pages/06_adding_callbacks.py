@@ -158,6 +158,9 @@ def update_output_example(val1, val2):
             In the first RadioItems we set the countries, and use this as an input to return a dictionary of cities in the first callback.
             The second callback takes this dictionary and displays the options in the second RadioItems function. 
             The last callback takes the value of both the first and second RadioItems to return the 'place is a city in country'. 
+
+            Note how we removed the 'component_id' and 'component_property' from our callback definitions.
+            You can omit these as it always takes the first value as id, second as property.
             '''),
 
             dbc.Card([

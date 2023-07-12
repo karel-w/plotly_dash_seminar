@@ -2,7 +2,7 @@ import dash
 from dash import html, dcc, callback, Input, Output
 import dash_mantine_components as dmc
 import dash_bootstrap_components as dbc
-from graphs.topenzyme_graph import topenzyme_graph
+from graphs.topenzyme_graph import topenzyme_graph_basic
 
 dash.register_page(
     __name__,
@@ -12,7 +12,7 @@ dash.register_page(
     icon='fa-solid fa-chart-line'
     )
 
-fig = topenzyme_graph(csv_path='../data/topenzyme_data.csv')
+fig = topenzyme_graph_basic(csv_path='../data/topenzyme_data.csv')
 
 layout = html.Div(children=[
     html.H1(children='Plotly graphs.'),
