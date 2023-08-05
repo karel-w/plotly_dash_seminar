@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import pandas as pd
+import sys
 
 #generate time series analysis data around -1 and 1
 def generate_random_array(size):
@@ -18,4 +19,9 @@ def generate_random_array(size):
     df.to_csv('time_series.csv')
 
     return 
+
+if __name__ == '__main__':
+    print(f'generating data of size {sys.argv[1]}')
+    generate_random_array(int(sys.argv[1]))
+    print(f'data generating done')
 

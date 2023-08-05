@@ -24,13 +24,30 @@ conda env create --file environment.yml
 conda activate dash_tutorial
 ```
 
+Alternatively you can create the environment from scratch and activate it.
+Any python >=3.7 should be sufficient
+
+```
+conda create --name dash_tutorial python=3.10
+conda activate dash_tutorial
+```
+
+Install required packages
+
+```
+pip install dash
+pip install pandas
+pip install dash-bootstrap-components
+pip install dash-mantine-components
+```
+
 ## Generate the mock data.
 
 Change to the data director and run generate_data.py with python.
 
 ```
 cd data/
-python generate_data.py
+python generate_data.py 100000
 ```
 
 ## Test the dashboard.
@@ -38,8 +55,8 @@ python generate_data.py
 Change back to the source directory and run the application.py file.
 
 ```
-cd ../src/
-python application.py
+cd ../
+python src/application.py
 ```
 
 The application should automatically in your browser. If the browser doesn't open the page, navigate to [localhost:8050](localhost:8050)

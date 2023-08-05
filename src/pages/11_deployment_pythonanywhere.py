@@ -3,9 +3,9 @@ from dash import html, dcc, callback, Input, Output
 
 dash.register_page(
     __name__,
-    path='/deployment-easy',
-    title='deployment: easy',
-    name='deployment: easy',
+    path='/deployment-panyw',
+    title='deployment',
+    name='deployment',
     icon='fa-solid fa-python'
     )
 

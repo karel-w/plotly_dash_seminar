@@ -10,7 +10,9 @@ dash.register_page(
     )
 
 layout = html.Div(children=[
-    html.H1(children='enter your page here.'),
+    html.H1(children='Under construction.'),
+
+    html.Img(src='https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Bob_the_builder.jpg/220px-Bob_the_builder.jpg', alt='bob', style={'width':'314px'}),
     
 ], style={'margin-left':'10px'})
 
