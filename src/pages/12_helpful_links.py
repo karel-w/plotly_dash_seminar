@@ -11,6 +11,14 @@ dash.register_page(
 
 layout = html.Div(children=[
     html.H1(children='enter your page here.'),
+    dcc.Markdown('''
+    Cheatsheets:
+
+    https://dashcheatsheet.pythonanywhere.com/
+    https://hellodash.pythonanywhere.com/cheatsheet
+    https://dash-example-index.herokuapp.com/
     
+
+    ''')
 ], style={'margin-left':'10px'})
 

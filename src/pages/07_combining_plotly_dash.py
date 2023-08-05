@@ -1,5 +1,5 @@
 import dash
-from dash import html, dcc, callback, Input, Output
+from dash import html, dcc, callback, Input, Output, State, ALL
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
@@ -37,12 +37,6 @@ dict_list = []
 for name, ec in zip(merged_data['names'].tolist(), merged_data['class'].tolist()):
     dict_list.append({'label': name, 'value': ec})
 
-# class_dictionary = pd.concat([part1, part2]).set_index('class').to_dict()['names']
-# print(merged_data)
-# data_dict_list = []
-# for ec in data['EC'].tolist():
-#     data_dict_list.append({'label': ec, 'value': ec})
-
 @callback(
     Output('dynamic_search', 'options'),
     Input('dynamic_search', 'search_value'),
@@ -51,33 +45,127 @@ def update_options(search_value):
     if not search_value:
         raise PreventUpdate
     return [o for o in dict_list if search_value.casefold() in o['label'].casefold()]
+
+#################################################################################################
+##### Color Pickers #############################################################################
+
+swatches = [
+    '#800000', '#000075', '#e6194B', '#f58231', '#a9a9a9', '#f032e6', '#3cb44b'
+]
+
+# colpick1 = dmc.ColorPicker(id={'type':'color_one'}, format='hex', swatchesPerRow=7, withPicker=True, swatches=swatches, value='#73cd0b')
+# # colpick2 = dmc.ColorPicker(id={'type':'color_two', 'index':'colindex'}, swatchesPerRow=7, withPicker=True, swatches=swatches, value='#f09721')
+
+@callback(
+    Output('color_store', 'value'),
+    Input('submit_button', 'n_clicks'),
+    State('color_picker1', 'value'),
+    State('color_picker2', 'value'),
+    State('resl-slider', 'value'),
+)
+def update_colors(n_clicks, colval1, colval2, ranges):
+    return colval1, colval2, ranges
+
 #################################################################################################
 ##### TopEnzyme Figure ##########################################################################
 @callback(
     Output('topenzyme_figure', 'figure'),
     Input('dynamic_search', 'value'),
-    Input('radioitems-inline-input', 'value'),
+    Input('ec_resl_radio', 'value'),
+    Input('color_store', 'value'),
 )
-def update_figure(search_value, data_property):
+def update_figure(search_value, data_property, stored_col):
+    # print('color_selected:', stored_col)
+    # print(ranges)
+    
+    if data_property == 'rl':
+        col1 = stored_col[0]
+        col2 = stored_col[1]
+        range_start = stored_col[2][0]
+        range_end = stored_col[2][1]
+    else:
+        col1 = 'red'
+        col2 = 'blue'
+        range_start = 100
+        range_end = 1000
+
     if search_value:
         if search_value.count('.') < 3:
             df = data[data['EC'].str.startswith(search_value + '.')]
         else:
             df = data[data['EC'].str.startswith(search_value)]
         
-        fig = topenzyme_graph_advanced(df, cproperty=data_property)
+        fig = topenzyme_graph_advanced(df, cproperty=data_property, cmin=col1, cmax=col2, minimum=range_start, maximum=range_end)
+
     else:
         df = data
-        fig = topenzyme_graph_advanced(df, cproperty=data_property)
+        fig = topenzyme_graph_advanced(df, cproperty=data_property, cmin=col1, cmax=col2, minimum=range_start, maximum=range_end)
 
     return fig
+
 #################################################################################################
 ##### Residue Length Card setings ###############################################################
+@callback(
+    Output('reslength_card', 'children'),
+    Input('ec_resl_radio', 'value'),
+)
+def reslength_card_options(radio_option):
+    if radio_option == 'rl':
+        component = dbc.Card([
+            dbc.CardBody([
+                html.H4('Settings panel'),
 
+                html.Br(),
 
+                html.H6('Sequence range'),
+
+                dcc.RangeSlider(0, 2000, value=[100, 1000], id='resl-slider',
+                    marks={
+                        0: '0',
+                        250: '250',
+                        500: '500',
+                        750: '750',
+                        1000: '1000',
+                        1250: '1250',
+                        1500: '1500',
+                        1750: '1750',
+                        2000: '2000',
+                    }
+                ),
+
+                html.Br(),
+
+                html.H6('Color spectrum'),
+
+                dbc.Row([
+                    dbc.Col([
+                        dmc.Text('select color one:', size='xs'),
+                        
+                        dmc.ColorPicker(id="color_picker1", format="hex", swatches=swatches, value="#ff0000"),
+
+                        html.Button('Submit', id='submit_button', n_clicks=0),
+
+                    ], width=6),
+
+                    dbc.Col([
+                        dmc.Text('select color two:', size='xs'),
+
+                        dmc.ColorPicker(id='color_picker2', format='hex', swatches=swatches, value='#0000ff'),
+                    ], width=6),
+                ])
+
+                
+            ])
+        ])
+
+        return component
+    else:
+        return []
 
 layout = html.Div(children=[
     html.H1(children='Combining dash and plotly.'),
+
+    dcc.Store(id = 'color_store'),
 
     dcc.Markdown('''
     Now lets take a look at combining dash and plotly to see what we can do to create truly interactive and explorable figures.
@@ -110,9 +198,25 @@ layout = html.Div(children=[
                     {'label': 'Residue Lengths', 'value': 'rl'},
                 ],
                 value='ec',
-                id='radioitems-inline-input',
+                id='ec_resl_radio',
                 inline=True,
             ),
+
+            html.Div(id='reslength_card'),
+
+            html.Br(),
+
+            html.H4('We can even show structures: click a graph point'),
+
+            # dbc.Row([
+            #     dbc.Col([
+
+            #     ], width=6),
+
+            #     dbc.Col([
+
+            #     ], width=6),
+            # ])
 
             dcc.Markdown('''
             We use this column for setting the graph options.

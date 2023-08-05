@@ -205,9 +205,12 @@ def topenzyme_graph_basic(csv_path):
 # fig.write_image('topenzyme_graph_test.png')
 
 
-def topenzyme_graph_advanced(data, cproperty='ec', minimum=10, maximum=1000, stepsize=16, cmin='green', cmax='red'):
+def topenzyme_graph_advanced(data, cproperty='ec', minimum=10, maximum=1000, stepsize=16, cmin='#3cb44b', cmax='red'):
     #intialize figure
     fig = go.Figure()
+
+    #colors to standard color for cproperty ec:
+
 
     #settings for each enzyme class
     enzyme_classes = np.arange(1, 8, 1)
@@ -220,7 +223,9 @@ def topenzyme_graph_advanced(data, cproperty='ec', minimum=10, maximum=1000, ste
     values = np.linspace(minimum, maximum, stepsize)
     cmix = np.linspace(0, 1, stepsize)
 
-    def colorFader(c1,c2,mix=0): 
+    # if cproperty != 'ec':
+        
+    def colorFader(c1='green',c2='blue',mix=0): 
         c1=np.array(mpl.colors.to_rgb(c1))
         c2=np.array(mpl.colors.to_rgb(c2))
             
